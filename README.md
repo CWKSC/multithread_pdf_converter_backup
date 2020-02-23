@@ -6,7 +6,7 @@ A dialog box will open and you can select multiple files of doc, docx, ppt, pptx
 
 Console will close when all convert work is finish.
 
-Here is the source code:
+Here is source code:
 
 ```C#
 using System;
