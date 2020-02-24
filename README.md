@@ -2,11 +2,11 @@
 
 Run `PdfConverter.exe`
 
-A dialog box will open and you can select multiple files of doc, docx, ppt, pptx.
+A File Dialog will open and you can select multiple files of doc, docx, ppt, pptx.
 
-The Progress will show on Console, like 1/4, 2/4, 3/4.
+Progress show on Console, like 1/4, 2/4, 3/4.
 
-Console will close when all convert work is finish.
+Console will auto close when all convert work is finish.
 
 Here is source code:
 
