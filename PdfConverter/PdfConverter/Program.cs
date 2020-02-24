@@ -10,10 +10,18 @@ namespace PdfConverter
 {
     class Program
     {
-        public const string patternDoc = @"(.*)(\.doc)$";
-        public const string patternDocx = @"(.*)(\.docx)$";
-        public const string patternPpt = @"(.*)(\.ppt)$";
-        public const string patternPptx = @"(.*)(\.pptx)$";
+
+        public static int totalWork = 0;
+
+        public static int finishedWorkNumber = 0;
+        public static object Lock = new object();
+        public static void FinishedWorkAddOne_ShowProgress()
+        {
+            lock (Lock) {
+                finishedWorkNumber++;
+                Console.WriteLine(finishedWorkNumber + " / " + totalWork);
+            }
+        }
 
         [STAThread]
         static void Main(string[] args)
@@ -29,31 +37,38 @@ namespace PdfConverter
 
             string[] names = fileDialog.FileNames;
 
-            Thread[] threads = new Thread[names.Length];
+            totalWork = names.Length;
 
-            for (int i = 0; i < names.Length; i++)
+            Thread[] threads = new Thread[totalWork];
+
+            for (int i = 0; i < totalWork; i++)
             {
                 string file = names[i];
-                string extension = System.IO.Path.GetExtension(file);
-                string[] path = { file, file.Substring(0, file.Length - extension.Length) + ".pdf" };
-                Console.WriteLine(file.Substring(0, file.Length - extension.Length) + ".pdf");
 
-                if(Regex.IsMatch(file, patternDoc) || Regex.IsMatch(file, patternDocx))
+                string extension = System.IO.Path.GetExtension(file);
+
+                string sourcePath = file;
+                string targetPath = file.Substring(0, file.Length - extension.Length) + ".pdf";
+                string[] passParameter = { sourcePath, targetPath };
+
+                if (IsWord(extension))
                 {
                     threads[i] = new Thread(WordToPDF);
                 }
-                else if (Regex.IsMatch(file, patternPpt) || Regex.IsMatch(file, patternPptx))
+                else if (IsPowerPoint(extension))
                 {
                     threads[i] = new Thread(PowerPointToPDF);
                 }
 
-                threads[i].Start(path);
+                threads[i].Start(passParameter);
                 threads[i].Join();
             }
 
             fileDialog.Dispose();
         }
 
+        public static bool IsWord(string extension) => extension.Equals(".doc") || extension.Equals(".docx");
+        public static bool IsPowerPoint(string extension) => extension.Equals(".ppt") || extension.Equals(".pptx");
 
         public static void WordToPDF(object parameter)
         {
@@ -76,6 +91,7 @@ namespace PdfConverter
             {
                 document.Close();
                 application.Quit();
+                FinishedWorkAddOne_ShowProgress();
             }
         }
 
@@ -85,7 +101,7 @@ namespace PdfConverter
             string targetPath = ((string[])parameter)[1];
 
             Microsoft.Office.Interop.PowerPoint.Application application = new Microsoft.Office.Interop.PowerPoint.Application();
-            Presentation presentation = application.Presentations.Open(sourcePath);
+            Presentation presentation = application.Presentations.Open(sourcePath, WithWindow: Microsoft.Office.Core.MsoTriState.msoFalse);
             try
             {
                 presentation.ExportAsFixedFormat(targetPath, PpFixedFormatType.ppFixedFormatTypePDF);
@@ -98,6 +114,7 @@ namespace PdfConverter
             {
                 presentation.Close();
                 application.Quit();
+                FinishedWorkAddOne_ShowProgress();
             }
         }
 
