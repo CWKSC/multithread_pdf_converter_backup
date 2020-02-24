@@ -1,6 +1,6 @@
 # Multiple Thread Pdf Converter (doc, docx, ppt, pptx)
 
-Run `PdfConverter.exe`
+Run `PdfConverter.exe`  [Directly Download Link](https://github.com/CWKSC/MultipleThreadPdfConverter/raw/master/PdfConverter.exe)
 
 A File Dialog will open and you can select multiple files of doc, docx, ppt, pptx.
 
