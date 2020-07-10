@@ -4,3 +4,10 @@ D:\User\Develop\C#\PdfConverter\PdfConverter\bin\Release\PdfConverter.pdb
 D:\User\Develop\C#\PdfConverter\PdfConverter\obj\Release\PdfConverter.csprojAssemblyReference.cache
 D:\User\Develop\C#\PdfConverter\PdfConverter\obj\Release\PdfConverter.exe
 D:\User\Develop\C#\PdfConverter\PdfConverter\obj\Release\PdfConverter.pdb
+D:\User\Develop\GitHub\MultipleThreadPdfConverter\PdfConverter\PdfConverter\bin\Release\PdfConverter.exe.config
+D:\User\Develop\GitHub\MultipleThreadPdfConverter\PdfConverter\PdfConverter\bin\Release\PdfConverter.exe
+D:\User\Develop\GitHub\MultipleThreadPdfConverter\PdfConverter\PdfConverter\bin\Release\PdfConverter.pdb
+D:\User\Develop\GitHub\MultipleThreadPdfConverter\PdfConverter\PdfConverter\obj\Release\PdfConverter.csprojAssemblyReference.cache
+D:\User\Develop\GitHub\MultipleThreadPdfConverter\PdfConverter\PdfConverter\obj\Release\PdfConverter.csproj.CoreCompileInputs.cache
+D:\User\Develop\GitHub\MultipleThreadPdfConverter\PdfConverter\PdfConverter\obj\Release\PdfConverter.exe
+D:\User\Develop\GitHub\MultipleThreadPdfConverter\PdfConverter\PdfConverter\obj\Release\PdfConverter.pdb

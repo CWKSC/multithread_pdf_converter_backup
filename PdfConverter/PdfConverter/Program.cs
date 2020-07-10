@@ -1,25 +1,26 @@
 ﻿using System;
-using System.Text.RegularExpressions;
+using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
 
 using Microsoft.Office.Interop.PowerPoint;
 using Microsoft.Office.Interop.Word;
+using Task = System.Threading.Tasks.Task;
 
 namespace PdfConverter
 {
-    class Program
+    public class Program
     {
 
         public static int totalWork = 0;
 
         public static int finishedWorkNumber = 0;
-        public static object Lock = new object();
-        public static void FinishedWorkAddOne_ShowProgress()
+        public static readonly object Lock = new object();
+        public static void FinishedWorkAddOne_ShowProgress(string targetPath)
         {
             lock (Lock) {
                 finishedWorkNumber++;
-                Console.WriteLine(finishedWorkNumber + " / " + totalWork);
+                Console.WriteLine($"[{finishedWorkNumber} / {totalWork}] {targetPath}");
             }
         }
 
@@ -29,17 +30,19 @@ namespace PdfConverter
             OpenFileDialog fileDialog = new OpenFileDialog
             {
                 Multiselect = true,
-                Title = "請選擇需要轉換為 pdf 的 doc, docx, ppt, pptx 文件",
+                Title = "Please select doc, docx, ppt, pptx files that need to be converted to pdf",
                 Filter = "MEOW? (*.doc, *.docx, *.ppt, *pptx)|*.doc;*.docx;*.ppt;*.pptx"
             };
 
             if (fileDialog.ShowDialog() != DialogResult.OK) { fileDialog.Dispose(); return; }
 
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             string[] names = fileDialog.FileNames;
 
             totalWork = names.Length;
 
-            Thread[] threads = new Thread[totalWork];
+            Task[] tasks = new Task[totalWork];
 
             for (int i = 0; i < totalWork; i++)
             {
@@ -49,32 +52,34 @@ namespace PdfConverter
 
                 string sourcePath = file;
                 string targetPath = file.Substring(0, file.Length - extension.Length) + ".pdf";
-                string[] passParameter = { sourcePath, targetPath };
 
                 if (IsWord(extension))
                 {
-                    threads[i] = new Thread(WordToPDF);
+                    tasks[i] = Task.Run(() => WordToPDF(sourcePath, targetPath));
                 }
                 else if (IsPowerPoint(extension))
                 {
-                    threads[i] = new Thread(PowerPointToPDF);
+                    tasks[i] = Task.Run(() => PowerPointToPDF(sourcePath, targetPath));
                 }
-
-                threads[i].Start(passParameter);
-                threads[i].Join();
             }
 
+            Thread.Sleep(2000);
+
+            Task.WhenAll(tasks).Wait();
+
             fileDialog.Dispose();
+
+            stopwatch.Stop();
+            Console.WriteLine("\nAll work finsih! Spent " + stopwatch.Elapsed.TotalSeconds + " seconds");
+            Console.Write("Press any Enter to exit ...");
+            Console.ReadLine();
         }
 
         public static bool IsWord(string extension) => extension.Equals(".doc") || extension.Equals(".docx");
         public static bool IsPowerPoint(string extension) => extension.Equals(".ppt") || extension.Equals(".pptx");
 
-        public static void WordToPDF(object parameter)
+        public static void WordToPDF(string sourcePath, string targetPath)
         {
-            string sourcePath = ((string[])parameter)[0];
-            string targetPath = ((string[])parameter)[1];
-
             Microsoft.Office.Interop.Word.Application application = new Microsoft.Office.Interop.Word.Application();
             Document document = null;
             try
@@ -89,17 +94,14 @@ namespace PdfConverter
             }
             finally
             {
+                FinishedWorkAddOne_ShowProgress(targetPath);
                 document.Close();
                 application.Quit();
-                FinishedWorkAddOne_ShowProgress();
             }
         }
 
-        public static void PowerPointToPDF(object parameter)
+        public static void PowerPointToPDF(string sourcePath, string targetPath)
         {
-            string sourcePath = ((string[])parameter)[0];
-            string targetPath = ((string[])parameter)[1];
-
             Microsoft.Office.Interop.PowerPoint.Application application = new Microsoft.Office.Interop.PowerPoint.Application();
             Presentation presentation = application.Presentations.Open(sourcePath, WithWindow: Microsoft.Office.Core.MsoTriState.msoFalse);
             try
@@ -112,9 +114,9 @@ namespace PdfConverter
             }
             finally
             {
+                FinishedWorkAddOne_ShowProgress(targetPath);
                 presentation.Close();
                 application.Quit();
-                FinishedWorkAddOne_ShowProgress();
             }
         }
 
