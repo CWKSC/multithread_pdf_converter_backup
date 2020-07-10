@@ -4,9 +4,9 @@ Run `PdfConverter.exe`  [Directly Download Link](https://github.com/CWKSC/Multip
 
 A File Dialog will open and you can select multiple files of doc, docx, ppt, pptx.
 
-Progress show on Console, like [1 / 4], [2 / 4], [3 / 4]. Also show the target path.
+Progress show on Console, like [1 / 4], [2 / 4], [3 / 4].
 
-Console will auto close when all convert work is finish.
+Also show the target path.
 
  Source code here:
 
