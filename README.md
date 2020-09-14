@@ -25,18 +25,6 @@ namespace PdfConverter
     public class Program
     {
 
-        public static int totalWork = 0;
-
-        public static int finishedWorkNumber = 0;
-        public static readonly object Lock = new object();
-        public static void FinishedWorkAddOne_ShowProgress(string targetPath)
-        {
-            lock (Lock) {
-                finishedWorkNumber++;
-                Console.WriteLine($"[{finishedWorkNumber} / {totalWork}] {targetPath}");
-            }
-        }
-
         [STAThread]
         static void Main(string[] args)
         {
@@ -133,6 +121,18 @@ namespace PdfConverter
             }
         }
 
+
+        public static int totalWork = 0;
+
+        public static int finishedWorkNumber = 0;
+        public static readonly object Lock = new object();
+        public static void FinishedWorkAddOne_ShowProgress(string targetPath)
+        {
+            lock (Lock) {
+                finishedWorkNumber++;
+                Console.WriteLine($"[{finishedWorkNumber} / {totalWork}] {targetPath}");
+            }
+        }
 
     }
 }
